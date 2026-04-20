@@ -1,0 +1,9 @@
+playwright
+httpx
+python-dotenv
+supabase
+torch
+transformers
+pillow
+numpy
+pandas
