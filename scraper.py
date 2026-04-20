@@ -156,12 +156,12 @@ class TrendtVisionScraper:
             product_data["image_url"] = front_images[0]
             remaining = back_images + other_valid
             product_data["additional_images"] = remaining[:9]
-        elif other_valid:
-            product_data["image_url"] = other_valid[0]
-            product_data["additional_images"] = other_valid[1:]
         elif back_images:
             product_data["image_url"] = back_images[0]
             product_data["additional_images"] = back_images[1:]
+        elif other_valid:
+            product_data["image_url"] = other_valid[0]
+            product_data["additional_images"] = other_valid[1:]
         else:
             product_data["image_url"] = None
             product_data["additional_images"] = []
