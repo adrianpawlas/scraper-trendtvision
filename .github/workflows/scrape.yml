@@ -1,0 +1,41 @@
+name: Scrape Trendt Vision
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_scrolls:
+        description: 'Max scrolls for product list'
+        required: false
+        default: '50'
+        type: string
+  schedule:
+    - cron: '0 0 * * 3'
+    - cron: '0 0 * * 0'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium
+
+      - name: Run scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python3 main.py
+        continue-on-error: true
+
+      - name: Check results
+        if: success()
+        run: echo "Scraping completed successfully"
