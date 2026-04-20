@@ -14,7 +14,7 @@ class SupabaseUploader:
         handle = url.split("/products/")[-1].split("?")[0] if "/products/" in url else url
         return f"{self.source}_{handle}"
 
-    def transform_product_data(self, raw_data: Dict[str, Any], image_embedding: List = None, info_embedding: List = None) -> Dict[str, Any]:
+    def transform_product_data(self, raw_data: Dict[str, Any], image_embedding: List = None, info_embedding: List = None, compressed_image_url: str = None) -> Dict[str, Any]:
         product_url = raw_data.get("product_url", "")
         
         product_id = self.generate_product_id(product_url)
@@ -65,7 +65,7 @@ class SupabaseUploader:
             "second_hand": False,
             "image_embedding": image_embedding,
             "country": None,
-            "compressed_image_url": None,
+            "compressed_image_url": compressed_image_url,
             "tags": None,
             "price": price_str,
             "sale": sale_str if sale_str != price_str else None,
