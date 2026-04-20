@@ -7,3 +7,5 @@ transformers
 pillow
 numpy
 pandas
+sentencepiece>=0.1.99
+protobuf>=3.20.0
