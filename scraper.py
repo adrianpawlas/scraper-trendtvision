@@ -135,13 +135,14 @@ class TrendtVisionScraper:
         
         front_images = []
         back_images = []
-        other_valid_images = []
+        other_valid = []
         
         for img in images:
             src = img.get("src", "")
             if not src:
                 continue
             src_lower = src.lower()
+            
             if "detail" in src_lower or "onbody" in src_lower:
                 continue
             elif "front" in src_lower:
@@ -149,17 +150,18 @@ class TrendtVisionScraper:
             elif "back" in src_lower:
                 back_images.append(src)
             else:
-                other_valid_images.append(src)
+                other_valid.append(src)
         
         if front_images:
             product_data["image_url"] = front_images[0]
-            product_data["additional_images"] = back_images + front_images[1:] + other_valid_images[:7]
+            remaining = back_images + other_valid
+            product_data["additional_images"] = remaining[:9]
+        elif other_valid:
+            product_data["image_url"] = other_valid[0]
+            product_data["additional_images"] = other_valid[1:]
         elif back_images:
             product_data["image_url"] = back_images[0]
-            product_data["additional_images"] = back_images[1:] + other_valid_images[:8]
-        elif other_valid_images:
-            product_data["image_url"] = other_valid_images[0]
-            product_data["additional_images"] = other_valid_images[1:]
+            product_data["additional_images"] = back_images[1:]
         else:
             product_data["image_url"] = None
             product_data["additional_images"] = []
