@@ -60,7 +60,7 @@ class TrendtVisionImporter:
     def _get_existing_products(self) -> Dict[str, Dict[str, Any]]:
         try:
             response = self.uploader.supabase.table("products").select(
-                "id, product_url, title, price, image_url, additional_images, size, sale, created_at, updated_at"
+                "id, product_url, title, price, image_url, additional_images, size, sale, created_at"
             ).eq("source", self.source).execute()
             
             existing = {}
@@ -113,7 +113,7 @@ class TrendtVisionImporter:
         image_emb = None
         info_emb = None
         
-        if force or not url:
+        if not force and not url:
             return image_emb, info_emb
         
         if not self.embedding_generator:
@@ -283,9 +283,6 @@ class TrendtVisionImporter:
                         
                     else:
                         self.stats.products_unchanged += 1
-                        existing["title"] = raw_data.get("title")
-                        existing["updated_at"] = datetime.utcnow().isoformat()
-                        products_to_insert.append(existing)
                     
                     if len(products_to_insert) >= self.BATCH_SIZE:
                         success, fail = await self._batch_insert(products_to_insert)
