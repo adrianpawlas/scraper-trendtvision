@@ -107,6 +107,14 @@ class SupabaseUploader:
         except Exception as e:
             print(f"Error checking existing products: {e}")
             return []
+    
+    def get_all_products(self) -> List[Dict[str, Any]]:
+        try:
+            response = self.supabase.table("products").select("*").eq("source", self.source).execute()
+            return response.data
+        except Exception as e:
+            print(f"Error fetching products: {e}")
+            return []
 
 
 def init_supabase_uploader() -> SupabaseUploader:

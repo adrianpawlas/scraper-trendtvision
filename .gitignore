@@ -2,7 +2,10 @@ __pycache__/
 *.pyc
 *.pyo
 .env
+.env.local
 .venv
 venv/
 *.egg-info/
-.pytest_cache/.env
+.pytest_cache/
+stale_products.json
+error_log.txt

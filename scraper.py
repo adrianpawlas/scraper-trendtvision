@@ -2,8 +2,10 @@ import asyncio
 import json
 import re
 import httpx
+import time
 from playwright.async_api import async_playwright, Page, Browser
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
+from datetime import datetime
 
 
 class TrendtVisionScraper:
@@ -185,21 +187,3 @@ async def get_all_product_urls() -> List[str]:
 async def scrape_product(url: str) -> Dict[str, Any]:
     async with TrendtVisionScraper() as scraper:
         return await scraper.extract_product_data(url)
-
-
-if __name__ == "__main__":
-    async def main():
-        async with TrendtVisionScraper() as scraper:
-            print("Scraping product list...")
-            urls = await scraper.scroll_to_load_all_products(max_scrolls=10)
-            print(f"\nTotal unique products: {len(urls)}")
-            print("\nFirst 5 URLs:")
-            for url in urls[:5]:
-                print(f"  {url}")
-
-            if urls:
-                print("\n--- Scraping first product ---")
-                data = await scraper.extract_product_data(urls[0])
-                print(json.dumps(data, indent=2, default=str))
-
-    asyncio.run(main())
