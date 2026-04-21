@@ -95,13 +95,12 @@ class TrendtVisionImporter:
         self, 
         raw_data: Dict[str, Any], 
         image_embedding: List = None, 
-        info_embedding: List = None,
-        force_new: bool = False
+        info_embedding: List = None
     ) -> Dict[str, Any]:
         return self.uploader.transform_product_data(
             raw_data, 
-            image_embedding if force_new else None, 
-            info_embedding if force_new else None
+            image_embedding, 
+            info_embedding
         )
 
     async def _generate_embeddings_safe(
