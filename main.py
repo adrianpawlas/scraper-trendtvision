@@ -9,7 +9,6 @@ from dataclasses import dataclass, field
 
 from scraper import TrendtVisionScraper
 from embedding import EmbeddingGenerator, create_product_info_string
-from image_compressor import ImageCompressor
 from supabase_client import SupabaseUploader, init_supabase_uploader
 
 
@@ -31,7 +30,6 @@ class TrendtVisionImporter:
     def __init__(self):
         self.scraper = TrendtVisionScraper()
         self.embedding_generator = None
-        self.compressor = None
         self.uploader = init_supabase_uploader()
         self.stats = RunStats()
         
@@ -247,8 +245,6 @@ class TrendtVisionImporter:
         current_scraped = {}
         
         async with TrendtVisionScraper() as scraper:
-            self.compressor = ImageCompressor()
-            
             all_urls_to_process = new_urls + existing_to_check
             
             for i, url in enumerate(all_urls_to_process):
@@ -272,9 +268,7 @@ class TrendtVisionImporter:
                     if is_new:
                         image_emb, info_emb = await self._generate_embeddings_safe(url, raw_data, force=True)
                         
-                        compressed_url = await self.compressor.compress_image(raw_data.get("image_url"))
-                        
-                        transformed = self._transform_product(raw_data, image_emb, info_emb, compressed_url)
+                        transformed = self._transform_product(raw_data, image_emb, info_emb)
                         products_to_insert.append(transformed)
                         
                         self.stats.new_products += 1
@@ -282,9 +276,7 @@ class TrendtVisionImporter:
                     elif has_changes:
                         image_emb, info_emb = await self._generate_embeddings_safe(url, raw_data, force=True)
                         
-                        compressed_url = await self.compressor.compress_image(raw_data.get("image_url"))
-                        
-                        transformed = self._transform_product(raw_data, image_emb, info_emb, compressed_url)
+                        transformed = self._transform_product(raw_data, image_emb, info_emb)
                         products_to_insert.append(transformed)
                         
                         self.stats.products_updated += 1
@@ -302,9 +294,6 @@ class TrendtVisionImporter:
         
         if products_to_insert:
             await self._batch_insert(products_to_insert)
-
-        if self.compressor:
-            await self.compressor.close()
 
         print("\n=== Step 4: Detecting stale products ===")
         stale_urls = self._find_stale_products(current_seen)
