@@ -133,9 +133,7 @@ class TrendtVisionScraper:
 
         images = product.get("images", [])
         
-        front_images = []
-        back_images = []
-        other_valid = []
+        valid_images = []
         
         for img in images:
             src = img.get("src", "")
@@ -143,25 +141,22 @@ class TrendtVisionScraper:
                 continue
             src_lower = src.lower()
             
-            if "detail" in src_lower or "onbody" in src_lower:
+            if ".gif" in src_lower:
                 continue
-            elif "front" in src_lower:
-                front_images.append(src)
-            elif "back" in src_lower:
-                back_images.append(src)
-            else:
-                other_valid.append(src)
+            if "onbody" in src_lower or "_on_" in src_lower or "on_body" in src_lower:
+                continue
+            if "detail" in src_lower:
+                continue
+            if "back" in src_lower:
+                continue
+            if "600x900" in src_lower or "600x900" in src_lower:
+                continue
+            
+            valid_images.append(src)
         
-        if front_images:
-            product_data["image_url"] = front_images[0]
-            remaining = back_images + other_valid
-            product_data["additional_images"] = remaining[:9]
-        elif back_images:
-            product_data["image_url"] = back_images[0]
-            product_data["additional_images"] = back_images[1:]
-        elif other_valid:
-            product_data["image_url"] = other_valid[0]
-            product_data["additional_images"] = other_valid[1:]
+        if valid_images:
+            product_data["image_url"] = valid_images[0]
+            product_data["additional_images"] = valid_images[1:9]
         else:
             product_data["image_url"] = None
             product_data["additional_images"] = []
